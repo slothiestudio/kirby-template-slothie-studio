@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html class="bg-cswhite" lang="en">
+<html lang="en">
 
 <?php snippet('head') ?>
 
 <body>
 	<?php snippet('header') ?>
 	<main>
-		<h1>Home</h1>
+		<h1><?= $page->title() ?></h1>
 	</main>
 	<?php snippet('footer') ?>
 
-	<?= vite()->js() ?>
+	<?= vite()->js('index.js') ?>
 </body>
 
 </html>
