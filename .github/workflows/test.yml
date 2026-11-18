@@ -18,17 +18,24 @@ jobs:
         include:
           - name: Vite, de + en, all features
             php: "8.4"
-            data: >-
-              --data project_name="Test Studio" --data domain=test-studio.ch
-              --data languages="de,en" --data analytics_id=test-id
+            answers: |
+              project_name: Test Studio
+              domain: test-studio.ch
+              languages: de,en
+              analytics_id: test-id
             vite: true
             urls: "/ /en /panel"
           - name: Plain, en, no extras
             php: "8.3"
-            data: >-
-              --data project_name="Plain Site" --data domain=plain-site.ch
-              --data languages=en --data frontend=plain --data php_version=8.3
-              --data staticache=false --data seo=false --data content_in_git=false
+            answers: |
+              project_name: Plain Site
+              domain: plain-site.ch
+              languages: en
+              frontend: plain
+              php_version: "8.3"
+              staticache: false
+              seo: false
+              content_in_git: false
             vite: false
             urls: "/ /panel /assets/css/main.css"
 
@@ -52,9 +59,12 @@ jobs:
           python-version: "3.13"
 
       - name: Render site
+        env:
+          ANSWERS: ${{ matrix.answers }}
         run: |
           pip install --quiet copier
-          eval copier copy --defaults --vcs-ref HEAD ${{ matrix.data }} template generated
+          printf '%s\n' "$ANSWERS" > answers.yml
+          copier copy --defaults --vcs-ref HEAD --data-file answers.yml template generated
 
       - name: Install
         working-directory: generated
