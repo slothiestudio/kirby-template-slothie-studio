@@ -1,0 +1,14 @@
+<?php
+
+return [
+  'debug' => true,
+{%- if staticache %}
+
+  'cache' => [
+    'pages' => [
+      'active' => false,
+      'type' => 'static',
+    ],
+  ],
+{%- endif %}
+];

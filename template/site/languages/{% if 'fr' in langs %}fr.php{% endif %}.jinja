@@ -1,0 +1,18 @@
+<?php
+
+return [
+  'code' => 'fr',
+  'default' => {{ 'true' if default_lang == 'fr' else 'false' }},
+  'direction' => 'ltr',
+  'locale' => [
+    'LC_ALL' => 'fr_CH.utf-8',
+  ],
+  'name' => 'Français',
+  'url' => '{{ '/' if default_lang == 'fr' else '/fr' }}',
+  'translations' => [
+    'skipToContent' => 'Aller au contenu',
+    'notFound.title' => 'Page introuvable',
+    'notFound.text' => 'Cette page n’existe pas.',
+    'notFound.back' => 'Retour à l’accueil',
+  ],
+];

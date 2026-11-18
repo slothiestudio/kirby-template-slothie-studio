@@ -1,0 +1,109 @@
+name: Test template
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Vite, de + en, all features
+            php: "8.4"
+            answers: |
+              project_name: Test Studio
+              domain: test-studio.ch
+              languages: de,en
+              analytics_id: test-id
+            vite: true
+            urls: "/ /en /panel"
+          - name: Plain, en, no extras
+            php: "8.3"
+            answers: |
+              project_name: Plain Site
+              domain: plain-site.ch
+              languages: en
+              frontend: plain
+              php_version: "8.3"
+              staticache: false
+              seo: false
+              content_in_git: false
+            vite: false
+            urls: "/ /panel /assets/css/main.css"
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          path: template
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: gd, ctype, curl, mbstring, zip
+          tools: composer:v2
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: Render site
+        env:
+          ANSWERS: ${{ matrix.answers }}
+        run: |
+          pip install --quiet copier
+          printf '%s\n' "$ANSWERS" > answers.yml
+          copier copy --defaults --vcs-ref HEAD --data-file answers.yml template generated
+
+      - name: Install
+        working-directory: generated
+        run: |
+          composer install --no-interaction --no-progress
+          npm install --no-audit --no-fund
+
+      - name: Build
+        if: matrix.vite
+        working-directory: generated
+        run: npm run build
+
+      - name: Format check (Prettier, Stylelint, ECS)
+        working-directory: generated
+        run: npm run format:check
+
+      - name: Lint PHP
+        working-directory: generated
+        run: find public_html site server.php -name '*.php' -not -path 'site/plugins/*' -print0 | xargs -0 -n1 php -l
+
+      - name: Lint workflows
+        working-directory: generated
+        run: |
+          git init -q
+          bash <(curl -fsSL https://raw.githubusercontent.com/rhysd/actionlint/v1.7.12/scripts/download-actionlint.bash) 1.7.12
+          ./actionlint -color
+
+      - name: Pages load
+        working-directory: generated
+        run: |
+          php -S localhost:8888 -t public_html server.php > server.log 2>&1 &
+          sleep 2
+          for path in ${{ matrix.urls }}; do
+            if ! curl -fsSL -o /dev/null "localhost:8888$path"; then
+              echo "::error::$path did not load"
+              cat server.log
+              exit 1
+            fi
+            echo "ok $path"
+          done
+          code=$(curl -s -o /dev/null -w '%{http_code}' localhost:8888/does-not-exist)
+          [ "$code" = 404 ] || { echo "::error::404 page returned $code"; exit 1; }

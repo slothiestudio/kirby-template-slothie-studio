@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="<?= $kirby->language()?->code() ?? '{{ default_lang }}' ?>">
+
+<?php snippet('head') ?>
+
+<body>
+  <a href="#main" class="skip-link"><?= t('skipToContent') ?></a>
+
+  <?php snippet('header') ?>
+
+  <main id="main">
+    <?= $slot ?>
+  </main>
+
+  <?php snippet('footer') ?>
+{%- if schema_org %}
+
+  <?php snippet('seo/schemas') ?>
+{%- endif %}
+</body>
+
+</html>

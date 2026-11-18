@@ -1,0 +1,18 @@
+<?php
+
+return [
+  'code' => 'en',
+  'default' => {{ 'true' if default_lang == 'en' else 'false' }},
+  'direction' => 'ltr',
+  'locale' => [
+    'LC_ALL' => 'en_US.utf-8',
+  ],
+  'name' => 'English',
+  'url' => '{{ '/' if default_lang == 'en' else '/en' }}',
+  'translations' => [
+    'skipToContent' => 'Skip to content',
+    'notFound.title' => 'Not found',
+    'notFound.text' => 'This page doesn’t exist.',
+    'notFound.back' => 'Back to the homepage',
+  ],
+];

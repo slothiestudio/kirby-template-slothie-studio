@@ -1,0 +1,17 @@
+{
+  "extends": "stylelint-config-standard",
+  "rules": {
+{%- if frontend == 'vite' %}
+    "at-rule-no-unknown": [
+      true,
+      {
+        "ignoreAtRules": ["tailwind", "plugin", "apply", "layer", "config", "variant", "theme", "source", "utility", "custom-variant"]
+      }
+    ],
+    "function-no-unknown": [true, { "ignoreFunctions": ["theme"] }],
+    "import-notation": null,
+{%- endif %}
+    "selector-class-pattern": null,
+    "custom-property-pattern": null
+  }
+}

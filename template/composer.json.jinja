@@ -1,0 +1,41 @@
+{
+  "name": "slothie/{{ project_slug }}",
+  "description": "{{ project_name }}",
+  "type": "project",
+  "require": {
+    "php": ">={{ php_version }}.0",
+    "getkirby/cms": "^5.6"
+{%- if frontend == 'vite' %},
+    "arnoson/kirby-vite": "^6.0"
+{%- endif %}
+{%- if seo %},
+    "tobimori/kirby-seo": "^2.0"
+{%- endif %}
+{%- if schema_org %},
+    "spatie/schema-org": "^5.0"
+{%- endif %}
+{%- if staticache %},
+    "getkirby/staticache": "^2.1"
+{%- endif %}
+  },
+  "require-dev": {
+    "symplify/easy-coding-standard": "^13.0"
+  },
+  "config": {
+    "allow-plugins": {
+      "getkirby/composer-installer": true
+    },
+    "optimize-autoloader": true,
+    "platform": {
+      "php": "{{ php_version }}.0"
+    }
+  },
+  "scripts": {
+    "start": [
+      "Composer\\Config::disableProcessTimeout",
+      "@php -S localhost:8888 -t public_html server.php"
+    ],
+    "lint": "ecs check",
+    "fix": "ecs check --fix"
+  }
+}

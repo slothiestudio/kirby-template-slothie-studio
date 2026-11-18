@@ -1,0 +1,29 @@
+<?php
+
+return [
+  // Turned on per domain, see config.{{ domain }}.php
+  'analytics' => false,
+{%- if seo %}
+  'tobimori.seo.robots.index' => false,
+  // Index every published page, not only listed ones: the home page is unlisted
+  'tobimori.seo.robots.followPageStatus' => false,
+{%- endif %}
+
+  // Languages are in site/languages; {{ default_lang }} is the default and lives at /.
+  // Adding a language later doesn't change any existing URLs.
+  'languages' => true,
+{%- if staticache %}
+
+  // Staticache writes finished pages to public_html/static, where Apache serves
+  // them without PHP (see public_html/.htaccess). Each server has one domain,
+  // so there's no per-domain folder.
+  'cache' => [
+    'pages' => [
+      'active' => true,
+      'type' => 'static',
+      'root' => dirname(__DIR__, 2) . '/public_html/static',
+      'prefix' => null,
+    ],
+  ],
+{%- endif %}
+];

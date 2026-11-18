@@ -1,0 +1,50 @@
+# System files
+Icon
+.DS_Store
+
+# Editors
+*.sublime-workspace
+/.vscode
+/.idea
+
+# Dependencies
+/vendor
+/kirby
+node_modules
+
+# Plugins (installed by Composer)
+/site/plugins/*
+
+# Generated
+/public_html/media/*
+!/public_html/media/index.html
+{%- if staticache %}
+/public_html/static/
+{%- endif %}
+{%- if frontend == 'vite' %}
+/public_html/dist/
+.dev
+{%- endif %}
+
+# Content
+{%- if content_in_git %}
+/content/**/_changes/
+{%- else %}
+/content/*
+{%- endif %}
+/content-backup-*
+.lock
+
+# -------------SECURITY-------------
+# NEVER publish these files via Git!
+/storage/accounts/*
+!/storage/accounts/index.html
+/storage/cache/*
+!/storage/cache/index.html
+/storage/sessions/*
+!/storage/sessions/index.html
+/site/config/.license
+
+# Tests
+/test-results/
+/playwright-report/

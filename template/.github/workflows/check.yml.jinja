@@ -1,0 +1,31 @@
+name: CHECK Pull request
+
+on:
+  pull_request:
+    branches: ["main", "live"]
+
+# A new push to a PR cancels its older, still running check.
+concurrency:
+  group: check-{% raw %}${{ github.event.pull_request.number }}{% endraw %}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    uses: slothiestudio/kirby-workflows/.github/workflows/check.yml@v1.1.0
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    with:
+      php-version: "{{ php_version }}"
+{%- if frontend == 'vite' %}
+      node-build: true
+{%- endif %}
+      smoke-urls: |
+        /panel
+{%- if content_in_git %}
+        /
+{%- for code in langs[1:] %}
+        /{{ code }}
+{%- endfor %}
+{%- endif %}

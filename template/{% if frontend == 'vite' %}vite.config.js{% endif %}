@@ -1,0 +1,21 @@
+import { resolve } from "node:path";
+import kirby from "vite-plugin-kirby";
+import tailwindcss from "@tailwindcss/vite";
+
+export default ({ mode }) => ({
+  root: "src",
+  base: mode === "development" ? "/" : "/dist/",
+
+  build: {
+    outDir: "../public_html/dist",
+    emptyOutDir: true,
+    rollupOptions: {
+      input: [
+        resolve(import.meta.dirname, "src/index.js"),
+        resolve(import.meta.dirname, "src/index.css"),
+      ],
+    },
+  },
+
+  plugins: [tailwindcss(), kirby()],
+});

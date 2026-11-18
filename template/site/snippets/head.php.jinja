@@ -1,0 +1,29 @@
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+{%- if seo %}
+
+  <?php snippet('seo/head') ?>
+{%- else %}
+  <title><?= $page->isHomePage() ? $site->title()->esc() : $page->title()->esc() . ' – ' . $site->title()->esc() ?></title>
+{%- endif %}
+{%- if frontend == 'vite' %}
+
+  <?= vite()->css('index.css') ?>
+  <?= vite()->js('index.js', [
+    'defer' => true,
+  ]) ?>
+{%- else %}
+
+  <?= css('assets/css/main.css') ?>
+  <?= js('assets/js/main.js', [
+    'defer' => true,
+  ]) ?>
+{%- endif %}
+{%- if analytics_id %}
+
+  <?php if (option('analytics')): ?>
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="{{ analytics_id }}"></script>
+  <?php endif ?>
+{%- endif %}
+</head>

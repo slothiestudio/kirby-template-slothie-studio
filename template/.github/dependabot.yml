@@ -1,0 +1,57 @@
+version: 2
+
+updates:
+  # Group names matter: the shared check.yml auto-merges PRs from groups ending
+  # in "-patch". Minor groups and majors (ungrouped) stay manual.
+
+  - package-ecosystem: composer
+    directory: /
+    schedule:
+      interval: daily
+
+    # Patches right away, Kirby always right away, everything else after 3 days.
+    cooldown:
+      default-days: 3
+      semver-patch-days: 0
+      exclude:
+        - "getkirby/*"
+
+    groups:
+      kirby-patch:
+        patterns: ["getkirby/*"]
+        update-types: [patch]
+
+      kirby-minor:
+        patterns: ["getkirby/*"]
+        update-types: [minor]
+
+      composer-patch:
+        patterns: ["*"]
+        exclude-patterns: ["getkirby/*"]
+        update-types: [patch]
+
+      composer-minor:
+        patterns: ["*"]
+        exclude-patterns: ["getkirby/*"]
+        update-types: [minor]
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: daily
+
+    cooldown:
+      default-days: 3
+
+    groups:
+      npm-patch:
+        update-types: [patch]
+
+      npm-minor:
+        update-types: [minor]
+
+  # Also bumps slothiestudio/kirby-workflows when a new version is tagged.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

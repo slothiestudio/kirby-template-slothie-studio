@@ -1,84 +1,52 @@
-# Kirby CMS + TailwindCSS + Alpinejs template
+# kirby-template-slothie-studio
 
-### Development
+[Copier](https://copier.readthedocs.io) template for slothiestudio's Kirby sites. It creates new
+sites and keeps existing ones up to date with template changes.
 
-1. Install the php packages defined in composer.json
-```bash
-    composer install
-```
-2. Install the node packages defined in package.json
-```bash
-    npm install
-```
-3. Start the dev server
-```bash
-    npm run dev
-```
-4. Open `localhost:8888` in the browser.
+## New site
 
-### Preview
-
-To preview the built project run:
 ```bash
-  npm run preview
+copier copy gh:slothiestudio/kirby-template-slothie-studio my-site
 ```
 
-### Build
+Copier asks for the site name, domain, PHP version, languages, Vite + Tailwind or plain CSS,
+Staticache, Kirby SEO, analytics and whether content goes into git, then prints the next steps.
+Install Copier with `pipx install copier`, `uv tool install copier` or `brew install copier`.
 
-To build the project run:
+## Update a site
+
 ```bash
-  npm run build
+cd my-site
+copier update
 ```
 
-### Production
-*Being worked on...*
+Template changes arrive as a normal diff to review and commit; the site's answers are stored in
+`.copier-answers.yml`. Files the site owns after the first copy are never overwritten: content,
+page blueprints, templates, header/footer, CSS/JS (`src/` or `public_html/assets/`) and the README.
 
-### Folder structure
+## What a site gets
+
+- Kirby 5 with `public_html/` as web root, `storage/` for accounts/cache/sessions, `server.php`
+- Languages from the start (first one at `/`), language switcher, translated 404 page
+- Optional: Vite + Tailwind CSS 4, Staticache, Kirby SEO 2 with schema.org
+- Per-domain config for live and preview, editor user role
+- CI and deploys via [slothiestudio/kirby-workflows](https://github.com/slothiestudio/kirby-workflows),
+  Dependabot with patch auto-merge
+- Prettier, Stylelint and ECS (`npm run format`), `.editorconfig`
+
+## Working on the template
+
+Files in `template/` are copied into the site; files ending in `.jinja` are rendered with the
+answers from `copier.yml` first. A file or folder whose name renders empty is skipped (that's how
+the language files and the Vite/plain variants work).
+
+Try a change locally (includes uncommitted changes):
+
 ```bash
-.
-├── content # The main content of the CMS.
-├── kirby # Installed files, can be ignored.
-│
-├── public # The outward facing folder 
-│   ├── dist # vite build generates this with js and css.
-│   ├── index.php # First PHP file.
-│   └── media # kirby generates images from the content here.
-│
-├── site # Most of the kirby files
-│   ├── blueprints 
-│   ├── config
-│   ├── plugins
-│   ├── snippets
-│   └── templates 
-│
-├── src
-│   ├── assets
-│   │   └──  # Fonts live here.
-│   ├── index.css # Main css file.
-│   └── index.js # Main js file.
-│
-├── storage # Files that we dont need to touch :)
-│   ├── accounts
-│   ├── cache
-│   └── sessions
-│
-├── server.php # Start of the Kirby PHP Server.
-│
-├── postcss.config.js # Helps with support for multiple browsers and tailwind.
-├── tailwind.config.js # Tailwind config.
-├── vite.config.js # Vite config.
-├── .dev # File generated from vite.
-│
-├── vendor  #Where composer stores packages.
-├── composer.json # PHP package manager.
-├── composer.lock # PHP package manager. No touchy.
-│
-├── node_modules # Where Node stores packages.
-├── package.json # Node package manager.
-├── package-lock.json # Node package manager. No touchy.
-│
-├── .gitignore # Tells git what files to ignore. 
-└── README.md
+copier copy --vcs-ref HEAD --defaults . /tmp/test-site --data project_name="Test" --data domain=test.ch
 ```
 
-Martina Holenstein & Guido Offermans, 2024
+The `Test template` workflow renders a Vite site (de + en, all features) and a plain site
+(en, no extras) on every PR, installs them, and checks formatting, PHP, the workflows and the pages.
+
+Sites update to tagged versions: after merging, tag a release (`git tag v2.1.0 && git push --tags`).
