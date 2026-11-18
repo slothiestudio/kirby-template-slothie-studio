@@ -1,0 +1,13 @@
+node_modules
+vendor
+kirby
+storage
+content
+site/plugins
+public_html/media
+{%- if frontend == 'vite' %}
+public_html/dist
+{%- endif %}
+{%- if staticache %}
+public_html/static
+{%- endif %}

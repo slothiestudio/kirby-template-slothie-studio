@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+@source "../site/templates/**/*.php";
+@source "../site/snippets/**/*.php";
+
+@theme {
+  --font-body: system-ui, sans-serif;
+}
+
+body {
+  font-family: var(--font-body);
+}
+
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
+
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 1rem;
+}
+
+.language-switcher {
+  display: flex;
+  gap: 0.5em;
+  list-style: none;
+}
+
+.language-switcher a[aria-current] {
+  text-decoration: underline;
+}
+
+main,
+.site-footer {
+  padding: 1rem;
+}

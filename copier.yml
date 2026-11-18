@@ -1,0 +1,123 @@
+# Copier template for slothiestudio Kirby sites.
+# New site:      copier copy gh:slothiestudio/kirby-template-slothie-studio my-site
+# Pull changes:  copier update   (inside the site)
+
+_min_copier_version: "9.4"
+_subdirectory: template
+_templates_suffix: .jinja
+_answers_file: .copier-answers.yml
+
+# Starter files the site owns after the first copy: updates never touch them.
+_skip_if_exists:
+  - README.md
+  - content/**
+  - site/blueprints/pages/**
+  - site/blueprints/site.yml
+  - site/templates/**
+  - site/snippets/header.php
+  - site/snippets/footer.php
+  - src/**
+  - public_html/assets/**
+
+_message_after_copy: |
+  {{ project_name }} is ready. Next steps:
+
+    cd {{ _copier_conf.dst_path }}
+    composer install
+    npm install
+    git init -b main && git add -A && git commit -m "Start from kirby-template-slothie-studio"
+    npm run dev   # http://localhost:8888, create the first Panel account at /panel
+
+  Commit composer.lock and package-lock.json: CI and the deploy need them.
+  GitHub setup (environments, secrets): see README.md.
+
+project_name:
+  type: str
+  help: Site name (used in titles and the README), e.g. Knot Knot
+  validator: "{% if not project_name.strip() %}Required{% endif %}"
+
+project_slug:
+  type: str
+  help: Package name for composer.json and package.json
+  default: "{{ project_name | lower | replace(' ', '-') | replace('.', '-') }}"
+  validator: >-
+    {% if not (project_slug | regex_search('^[a-z0-9][a-z0-9-]*$')) %}Lowercase letters, numbers and dashes only{% endif %}
+
+domain:
+  type: str
+  help: Live domain without https://, e.g. knotknot.ch
+  validator: >-
+    {% if not (domain | regex_search('^[a-z0-9.-]+\.[a-z]{2,}$')) %}A domain like example.ch{% endif %}
+
+preview_domain:
+  type: str
+  help: Preview domain (deploys from main)
+  default: "preview.{{ domain }}"
+
+php_version:
+  type: str
+  help: PHP version on the servers
+  choices:
+    - "8.4"
+    - "8.3"
+  default: "8.4"
+
+languages:
+  type: str
+  help: >-
+    Language codes, comma-separated; the first is the default and keeps the URLs at /.
+    Available: de, en, fr, it
+  default: "de"
+  validator: >-
+    {% set codes = languages.split(',') | map('trim') | list %}
+    {% if not codes or codes | reject('in', ['de', 'en', 'fr', 'it']) | list %}Use de, en, fr and/or it, comma-separated{% elif codes | unique | list | length != codes | length %}No duplicates{% endif %}
+
+frontend:
+  type: str
+  help: How CSS and JS are built
+  choices:
+    Vite + Tailwind CSS 4 (src/ → public_html/dist): vite
+    Plain CSS and JS in public_html/assets, no build: plain
+  default: vite
+
+staticache:
+  type: bool
+  help: Cache finished pages as static HTML that Apache serves without PHP (Staticache)
+  default: true
+
+seo:
+  type: bool
+  help: Kirby SEO 2 (meta tags, sitemap, robots; needs a paid license per live domain)
+  default: true
+
+schema_org:
+  type: bool
+  help: Schema.org JSON-LD via spatie/schema-org (needs PHP 8.4)
+  default: "{{ seo and php_version == '8.4' }}"
+  when: "{{ seo and php_version == '8.4' }}"
+
+analytics_id:
+  type: str
+  help: Umami website ID for the live site (empty for no analytics)
+  default: ""
+
+content_in_git:
+  type: bool
+  help: Keep content/ in git (the deploy never uploads it either way)
+  default: true
+
+# Computed values, not asked
+langs:
+  type: yaml
+  default: "{{ languages.split(',') | map('trim') | list }}"
+  when: false
+
+default_lang:
+  type: str
+  default: "{{ languages.split(',')[0] | trim }}"
+  when: false
+
+multilang:
+  type: bool
+  default: "{{ languages.split(',') | length > 1 }}"
+  when: false

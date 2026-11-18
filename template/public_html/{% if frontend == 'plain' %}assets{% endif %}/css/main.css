@@ -1,0 +1,36 @@
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+}
+
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
+
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 1rem;
+}
+
+.language-switcher {
+  display: flex;
+  gap: 0.5em;
+  list-style: none;
+}
+
+.language-switcher a[aria-current] {
+  text-decoration: underline;
+}
+
+main,
+.site-footer {
+  padding: 1rem;
+}

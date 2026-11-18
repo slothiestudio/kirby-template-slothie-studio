@@ -1,0 +1,12 @@
+<?php
+
+return [
+  // Fixed address, so (cached) pages always link to https://{{ domain }}
+  'url' => 'https://{{ domain }}',
+{%- if analytics_id %}
+  'analytics' => true,
+{%- endif %}
+{%- if seo %}
+  'tobimori.seo.robots.index' => true,
+{%- endif %}
+];

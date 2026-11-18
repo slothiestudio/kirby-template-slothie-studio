@@ -1,0 +1,94 @@
+# {{ project_name }}
+
+Kirby CMS site for [{{ domain }}](https://{{ domain }}), created from
+[kirby-template-slothie-studio](https://github.com/slothiestudio/kirby-template-slothie-studio).
+
+## Setup
+
+```bash
+composer install
+npm install
+```
+
+Needs PHP {{ php_version }}+ and Node 24.
+
+## Development
+
+```bash
+npm run dev
+```
+
+Runs PHP's built-in server on `localhost:8888`{% if frontend == 'vite' %} together with the Vite dev server{% endif %}.
+Create the first Panel account at `/panel` (Kirby only allows that on localhost).
+{%- if frontend == 'vite' %}
+
+```bash
+npm run build     # build src/ into public_html/dist
+npm run preview   # build and serve
+```
+{%- endif %}
+
+## Format
+
+```bash
+npm run format        # apply
+npm run format:check  # check (runs in CI)
+```
+
+Prettier, Stylelint and ECS (PHP, PSR-12 with 2-space indentation).
+
+## Languages
+
+{{ default_lang }} is the default language at `/`{% for code in langs[1:] %}, {{ code }} lives under `/{{ code }}`{% endfor %}.
+Languages are configured in `site/languages/`; content files carry the language code
+(`home.{{ default_lang }}.txt`). UI texts (404 page, skip link) are translated in the language files.
+
+## Deployment
+
+- `main` deploys to https://{{ preview_domain }}
+- `live` deploys to https://{{ domain }}
+
+The workflows in `.github/workflows/` call the shared ones in
+[slothiestudio/kirby-workflows](https://github.com/slothiestudio/kirby-workflows). Every push to
+`main` keeps a "Release: main → live" PR up to date; merging it (with a merge commit) releases to live.
+
+Setup on GitHub:
+
+- Environments `preview` and `Live` with secrets `SERVER_URL`, `USERNAME`, `SSH_KEY` or `PASSWORD`
+  (optional `SSH_PASSPHRASE`, `SSH_FINGERPRINT`) and the variable `SERVER_DIRECTORY` (the project root)
+- Settings → Actions → General: allow GitHub Actions to create pull requests
+
+On the servers: PHP {{ php_version }}+, document root `public_html/`.
+{%- if seo %} Kirby SEO 2 needs a license per live domain: activate it in the Panel under "Metadata & SEO".{% endif %}
+{%- if staticache %}
+
+Pages are cached as static HTML in `public_html/static/` (Staticache) and served by Apache without PHP.
+Kirby clears the cache on content changes and every deploy deletes it. Caching is off on localhost.
+{%- endif %}
+
+## Template updates
+
+```bash
+copier update   # pulls changes from kirby-template-slothie-studio as a diff
+```
+
+Your answers are stored in `.copier-answers.yml`. Starter files the site owns (content, templates,
+blueprints, header/footer, CSS/JS, this README) are never overwritten.
+
+## Folder structure
+
+```
+content/        → Kirby content{% if not content_in_git %} (gitignored, lives on the server){% endif %}
+public_html/    → web root (index.php, .htaccess{% if frontend == 'vite' %}, dist/ = built assets{% else %}, assets/{% endif %}{% if staticache %}, static/ = page cache{% endif %})
+site/
+  blueprints/
+  config/       → config.php + per-domain overrides
+  languages/
+  plugins/      → installed by Composer (gitignored)
+  snippets/     → layout, head, header, footer, language switcher
+  templates/
+{%- if frontend == 'vite' %}
+src/            → CSS (Tailwind) and JS, built by Vite
+{%- endif %}
+storage/        → accounts, cache, sessions (gitignored)
+```
